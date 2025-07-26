@@ -1,67 +1,60 @@
 const userService = require('../services/userService');
 
-const getUsers = (req, res) => {
-  const users = userService.getUsers();
+const getUsers = async (req, res) => {
+  const users = await userService.getUsers();
 
   res.json(users);
 };
 
-const getUserById = (req, res) => {
+const getUserById = async (req, res) => {
   const id = Number(req.params.id);
-  const user = userService.getUserById(id);
+  const user = await userService.getUserById(id);
 
   if (!user) {
-    res.status(404).json({ error: 'User not found' });
-
-    return;
+    return res.sendStatus(404);
   }
 
   res.json(user);
 };
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
-    res.status(400).json({ error: 'Name is required' });
-
-    return;
+    return res.sendStatus(400);
   }
 
-  const newUser = userService.createUser({ name });
+  const newUser = await userService.createUser({ name });
 
   res.status(201).json(newUser);
 };
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
   const id = Number(req.params.id);
   const { name } = req.body;
 
   if (!name) {
-    res.status(400).json({ error: 'Name is required' });
-
-    return;
+    return res.sendStatus(400);
   }
 
-  const updatedUser = userService.updateUser(id, { name });
+  const updatedUser = await userService.updateUser(id, { name });
 
   if (!updatedUser) {
-    res.status(404).json({ error: 'User not found' });
-
-    return;
+    return res.sendStatus(404);
   }
 
   res.json(updatedUser);
 };
 
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
   const id = Number(req.params.id);
+  const user = await userService.getUserById(id);
 
-  if (!userService.getUserById(id)) {
-    return res.status(404).send('Not found');
+  if (!user) {
+    return res.sendStatus(404);
   }
 
-  userService.deleteUser(id);
+  await userService.deleteUser(id);
   res.sendStatus(204);
 };
 

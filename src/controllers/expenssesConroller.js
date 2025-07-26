@@ -1,8 +1,8 @@
 const expensesService = require('../services/expensesService');
 const userService = require('../services/userService');
 
-const getExpenses = (req, res) => {
-  let result = expensesService.getExpenses();
+const getExpenses = async (req, res) => {
+  let result = await expensesService.getExpenses();
   const { userId, categories, from, to } = req.query;
 
   if (userId) {
@@ -32,9 +32,9 @@ const getExpenses = (req, res) => {
   res.json(result);
 };
 
-const getExpenseById = (req, res) => {
+const getExpenseById = async (req, res) => {
   const id = Number(req.params.id);
-  const expense = expensesService.getExpenseById(id);
+  const expense = await expensesService.getExpenseById(id);
 
   if (!expense) {
     return res.sendStatus(404);
@@ -42,20 +42,20 @@ const getExpenseById = (req, res) => {
   res.json(expense);
 };
 
-const createExpense = (req, res) => {
+const createExpense = async (req, res) => {
   const { userId, spentAt, title, amount, category, note } = req.body;
 
   if (!userId || !spentAt || !title || amount === undefined || !category) {
     return res.status(400).send('Missing required fields');
   }
 
-  const user = userService.getUserById(userId);
+  const user = await userService.getUserById(userId);
 
   if (!user) {
     return res.status(400).send('User not found');
   }
 
-  const expense = expensesService.createExpense({
+  const expense = await expensesService.createExpense({
     userId,
     spentAt,
     title,
@@ -71,9 +71,9 @@ const createExpense = (req, res) => {
   res.status(201).json(expense);
 };
 
-const updateExpense = (req, res) => {
+const updateExpense = async (req, res) => {
   const id = Number(req.params.id);
-  const expense = expensesService.getExpenseById(id);
+  const expense = await expensesService.getExpenseById(id);
 
   if (!expense) {
     return res.sendStatus(404);
@@ -81,7 +81,7 @@ const updateExpense = (req, res) => {
 
   const { spentAt, title, amount, category, note } = req.body;
 
-  const updatedExpense = expensesService.updateExpense(id, {
+  const updatedExpense = await expensesService.updateExpense(id, {
     userId: expense.userId,
     spentAt,
     title,
@@ -97,14 +97,14 @@ const updateExpense = (req, res) => {
   res.json(updatedExpense);
 };
 
-const deleteExpense = (req, res) => {
+const deleteExpense = async (req, res) => {
   const id = Number(req.params.id);
-  const expense = expensesService.getExpenseById(id) || null;
+  const expense = await expensesService.getExpenseById(id);
 
   if (!expense) {
     return res.sendStatus(404);
   }
-  expensesService.deleteExpense(id);
+  await expensesService.deleteExpense(id);
   res.sendStatus(204);
 };
 

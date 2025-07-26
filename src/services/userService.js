@@ -33,13 +33,13 @@ function updateUser(id, { name }) {
 }
 
 function deleteUser(id) {
-  users = users.filter((user) => user.id !== id);
+  users = users.filter((user) => user.id !== Number(id));
 }
 
-const reset = () => {
+function reset() {
   users = [];
   nextId = 1;
-};
+}
 
 module.exports = {
   getUsers,
